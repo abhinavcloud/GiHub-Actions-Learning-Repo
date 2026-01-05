@@ -5,4 +5,6 @@ This repository is for my personal use and for learning purposes.
 I am learning GitHub Actions and I will use this repo for making changes or practical demos to understand the CI/CD concepts around GitHub Actions.
 
 Note: This is main branch
-Note: This is feature1 branch
+
+
+Note: This is feature1 branch note which is merged from feature1 branch to main branch
