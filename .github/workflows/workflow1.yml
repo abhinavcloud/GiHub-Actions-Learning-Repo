@@ -1,0 +1,64 @@
+name: workflow1
+on: [push]
+jobs:
+  lint:
+    runs-on : ubuntu-latest
+    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: lint 
+        run: npm lint
+  test:
+    runs-on: ubuntu-;atest
+    needs: lint
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: test
+        run: npm test
+  build:
+    runs-on : ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: build 
+        run: npm build
+  deploy:
+    runs-on : ubuntu-latest
+    needs: build
+    steps:
+      - name: building
+        run: echo "Deploying..."
+    
+            
+
+ 
