@@ -7,4 +7,4 @@ jobs:
             - name: Dump Github context
               env: 
                 GITHUB_CONTEXT: ${{toJson(github.event)}}
-              run: echo "GITHUB_CONTEXT"
+              run: echo "$GITHUB_CONTEXT"
