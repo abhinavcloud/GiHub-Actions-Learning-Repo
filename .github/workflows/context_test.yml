@@ -8,3 +8,9 @@ jobs:
               env: 
                 GITHUB_CONTEXT: ${{toJson(github.event)}}
               run: echo "$GITHUB_CONTEXT"
+            - name: Dump Job Context
+              env:
+                JOB_CONTEXT: ${{toJson(job.event)}} 
+              run: echo "$JOB_CONTEXT"
+            - name: Dump Step Context
+              run: echo "${{toJson(steps)}}"
