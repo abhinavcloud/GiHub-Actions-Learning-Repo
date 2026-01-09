@@ -1,0 +1,26 @@
+#This is workflow1.yml
+# In this workflow, we will create a simple CI pipeline that will trigger on a sepcific event.
+# This workflow will include the Action Types in conjuction with the event trigger.
+# This is to illustrate how to use Action Types and event triggers together in a GitHub Actions workflow.
+# Only when the event trigger condition with the respective Action Type is met, the workflow will execute the defined jobs.
+
+# We will use the 'pull_request' event trigger with the 'opened, edited or closed' Action Types.
+
+name: Workflow for pull_request events with opened, edited or closed Action Types
+on:
+    pull_request:
+        types:
+            - opened
+            - closed
+            - edited
+jobs:
+    dump_context_to_log:
+        runs-on: ubuntu-latest
+        steps:
+            - name: dump_event_context
+              run: echo "{{toJson(github.event)}}"
+
+
+
+
+
