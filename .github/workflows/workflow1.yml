@@ -1,4 +1,4 @@
-#This is workflow1.yml
+# This is workflow1.yml
 # In this workflow, we will create a simple CI pipeline that will trigger on a sepcific event.
 # This workflow will include the Action Types in conjuction with the event trigger.
 # This is to illustrate how to use Action Types and event triggers together in a GitHub Actions workflow.
@@ -18,8 +18,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: dump_event_context
-              run: echo "{{toJson(github.event)}}"
+              run: echo "{{toJson(github.event)}}" > pull_event.log  # This will dump the pull_reqeust event logs 
+            - name: show_event log
+              run: cat pull_event.log
 
+# The way to test this workflow is simple
+# We will creaate a dummy branch named dummy and include a text file with some text
+# Then we will create a pull request from the dummy branch to this current branch on which this workflow exists
+# This should trigger this workflow and should dump the logs and we should be able to see the logs
 
 
 
