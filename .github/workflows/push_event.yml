@@ -8,7 +8,7 @@ on :
     #Event
     push:
         #Event Filter
-        branches: # his workflow will only run if the push event is on these brancges
+        branches: # This workflow will only run if the push event is on these brancges
             - main
             - project2
             - dummy
