@@ -14,12 +14,6 @@ on:
             - closed
             - edited
             - reopened
-        #branches: #Even though event filter was not part of the plan for this workflow but I had to add it temporarily 
-        #          #This becasue the pull request will run on default (main) branch until the branch is specified
-        #          #For now we ignore this and until project 2 is merged to main we will keep this event filter
-        #  - main
-        #  - project2
-        #  - project1
 jobs:
     dump_context_to_log:
         runs-on: ubuntu-latest
@@ -30,8 +24,8 @@ jobs:
               run: cat pull_event.log
 
 # The way to test this workflow is simple
-# We will creaate a dummy branch named dummy and include a text file with some text
-# Then we will create a pull request from the dummy branch to this current branch on which this workflow exists
+# We will creaate a dummy branch from the project2 branch
+# Then we will create a pull request from the dummy branch to this project  branch on which this workflow exists
 # This should trigger this workflow and should dump the logs and we should be able to see the logs
 
 
