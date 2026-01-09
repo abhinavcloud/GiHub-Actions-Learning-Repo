@@ -1,4 +1,4 @@
-# This is workflow1.yml
+# This is Pull Event workflow with specific Event Action Types
 # In this workflow, we will create a simple CI pipeline that will trigger on a sepcific event.
 # This workflow will include the Action Types in conjuction with the event trigger.
 # This is to illustrate how to use Action Types and event triggers together in a GitHub Actions workflow.
