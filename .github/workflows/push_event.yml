@@ -12,8 +12,7 @@ on :
             - main
             - project2
             - dummy
-        branches-ignore:
-            - project1 # Any push event on this branch will not trigger this workflow.
+
 jobs:
     #Job 1
     lint:
