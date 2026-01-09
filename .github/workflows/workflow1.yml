@@ -14,18 +14,18 @@ on:
             - closed
             - edited
             - reopened
-        branches: #Even though event filter was not part of the plan for this workflow but I had to add it temporarily 
-                  #This becasue the pull request will run on default (main) branch until the branch is specified
-                  #For now we ignore this and until project 2 is merged to main we will keep this event filter
-          - main
-          - project2
-          - project1
+        #branches: #Even though event filter was not part of the plan for this workflow but I had to add it temporarily 
+        #          #This becasue the pull request will run on default (main) branch until the branch is specified
+        #          #For now we ignore this and until project 2 is merged to main we will keep this event filter
+        #  - main
+        #  - project2
+        #  - project1
 jobs:
     dump_context_to_log:
         runs-on: ubuntu-latest
         steps:
             - name: dump_event_context
-              run: echo "{{toJson(github.event)}}" > pull_event.log  # This will dump the pull_reqeust event logs 
+              run: echo "${{toJson(github.event)}}" > pull_event.log  # This will dump the pull_reqeust event logs 
             - name: show_event log
               run: cat pull_event.log
 
