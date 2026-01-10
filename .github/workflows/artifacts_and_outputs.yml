@@ -122,6 +122,18 @@ jobs: #Sequential Job Executions
             - name: Install dependencies
               run: npm ci  # Run Shell Command
 
+            - name: Download Build Artifacts
+              # Since this build job runs on a different machine 
+              # the build artifacts created in the previous job is not available in this job.
+              # Therefore this must be downloaded on this runner where this deploy job will be run
+              uses: actions/download-artifacts@v4 
+              # This GitHub Actions downloads the artifacts from GitHub to the runner
+              with:
+                name: build-files
+                # This is the identifier name by which we know which artifact is deployed
+                path: dist
+                # Path on the runner machine where the artifact file will be downloaded
+
             - name: deploy
               run: echo "Deploying (simulated)....." # Run Shell Command
 
