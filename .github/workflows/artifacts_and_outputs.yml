@@ -136,6 +136,9 @@ jobs: #Sequential Job Executions
                 # This is the identifier name by which we know which artifact is deployed
                 path: dist
                 # Path on the runner machine where the artifact file will be downloaded
+            
+            - name: Check that the artifacts are downloaded in the runner successfully
+              run: ls dist # Just running the ls command on the dist directory to check if the files are downloaded to runner
 
             - name: deploy
               run: echo "Deploying (simulated)....." # Run Shell Command
