@@ -89,11 +89,8 @@ jobs: #Sequential Job Executions
               with:
                 node-version: '20' # Condtional version lock of environment
 
-            # The below step will use GitHub Actions caching actions to cache the dependencies files.
-            # So the the subsequest jobs won't need to install dependencies files from scratch everytime
-            # Caching like this will help in shortening the job and workflow execution time.
-            # Cached files will be store in GitHub Cloud and will be used whenever required for any job/workflow
-            # Cached will fail when the job will be triggered for the very first time.
+            # The below step will use the existing cache created on the previous job if not invalidated
+            # If the cache in the previous step is invalidated then new cache will be created with the path and key
             - name: Caching Dependencies
               uses: actions/cache@v3
               with:
@@ -159,11 +156,8 @@ jobs: #Sequential Job Executions
               with:
                 node-version: '20' # Condtional version lock of environment
 
-            # The below step will use GitHub Actions caching actions to cache the dependencies files.
-            # So the the subsequest jobs won't need to install dependencies files from scratch everytime
-            # Caching like this will help in shortening the job and workflow execution time.
-            # Cached files will be store in GitHub Cloud and will be used whenever required for any job/workflow
-            # Cached will fail when the job will be triggered for the very first time.
+             # The below step will use the existing cache created on the previous job if not invalidated
+             # If the cache in the previous step is invalidated then new cache will be created with the path and key
             - name: Caching Dependencies
               uses: actions/cache@v3
               with:
@@ -228,11 +222,8 @@ jobs: #Sequential Job Executions
               with:
                 node-version: '20' # Condtional version lock of environment
 
-            # The below step will use GitHub Actions caching actions to cache the dependencies files.
-            # So the the subsequest jobs won't need to install dependencies files from scratch everytime
-            # Caching like this will help in shortening the job and workflow execution time.
-            # Cached files will be store in GitHub Cloud and will be used whenever required for any job/workflow
-            # Cached will fail when the job will be triggered for the very first time.
+            # The below step will use the existing cache created on the previous job if not invalidated
+            # If the cache in the previous step is invalidated then new cache will be created with the path and key
             - name: Caching Dependencies
               uses: actions/cache@v3
               with:
