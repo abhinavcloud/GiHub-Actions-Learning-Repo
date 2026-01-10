@@ -2,7 +2,7 @@
 # The main intent of this workflow is not to explain push event or Event Filter.
 # The main intent of this workflow is to work and practice on artifacts and outputs
 
-# Artifactts are the the files which are produced as a result of a step inside a job being executed.
+# Artifacts are the the files which are produced as a result of a step inside a job being executed.
 # These artifcats can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
 # Using this identifier we can then upload these artifacts on different jobs.
 # The identifier is important for the artifact because as we know, different jobs run on differnt runners (environmnent).
@@ -105,6 +105,9 @@ jobs: #Sequential Job Executions
                 # Identifier of the artifact by which the artifact is to be referenced
                 path: dist 
                 # Path of the folder where the files are stored on the runner and from where it must be uploaded in GitHub bucket
+                if-no-files-found: ignore 
+                # If not files are found to be in the runner then the job would simply continue/pass and not pass
+                # This is optional, valid values are warn, ignore, error. Defaults to warn
     #Job 4
     deploy:
         # Runner 
