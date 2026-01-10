@@ -3,7 +3,7 @@
 # The main intent of this workflow is to work and practice on artifacts and outputs
 
 # Artifacts are the the files which are produced as a result of a step inside a job being executed.
-# These artifcats can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
+# These artifacts can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
 # Using this identifier we can then upload these artifacts on different jobs.
 # The identifier is important for the artifact because as we know, different jobs run on differnt runners (environmnent).
 # There for it is important that the artificats are stored with some identifier so that a diferent job on a fresh runner can upload in in its environment.
