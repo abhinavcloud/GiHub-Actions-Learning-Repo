@@ -1,122 +1,87 @@
-# GitHub Actions – Complete Workflow & Concepts Guide
-
-This repository demonstrates a **professional, end-to-end GitHub Actions workflow** while also serving as a **conceptual reference** for GitHub Actions fundamentals.
-
-It is designed for:
-
-* Learning GitHub Actions from first principles
-* Interview preparation
-* Team onboarding and internal documentation
+# GitHub Actions – Artifacts, Outputs & Caching
 
 ---
 
-## 1. What is GitHub Actions?
+## Overview
 
-GitHub Actions is GitHub’s native **CI/CD and automation platform** that allows you to:
+This repository demonstrates a **production‑grade GitHub Actions workflow** focused on understanding and practicing **core GitHub Actions concepts** using a realistic CI/CD pipeline.
 
-* Build
-* Test
-* Lint
-* Package
-* Deploy
-* Automate operational tasks
+The workflow is intentionally verbose and heavily commented to act as **learning material** rather than a minimal example.
 
-All automation is defined using **YAML workflows** stored in:
+### Primary Learning Goals
+
+* Artifacts (file‑based data sharing between jobs)
+* Outputs (value‑based data sharing between jobs)
+* Job isolation and runner lifecycle
+* Sequential vs parallel execution
+* Dependency caching for performance optimization
+* Event filters and workflow triggers
+
+---
+
+## High‑Level Workflow Flow
 
 ```
-.github/workflows/*.yml
+Push Event (main | project2 | dummy)
+                │
+                ▼
+        ┌───────────────────┐
+        │   LINT            │
+        │ npm ci            │
+        │ npm run lint      |
+        │ cache: ~/.npm     |
+        └───────────────────┘
+                │
+                ▼
+        ┌───────────────────────┐
+        │   TEST                │
+        │ npm test              |
+        │ test.log → Artifact   |
+        │ cache: ~/.npm         |
+        └───────────────────────┘
+                │
+                ▼
+        ┌──────────────────┐
+        │   BUILD          │
+        │ npm run build    |
+        │ dist/ → Artifact |
+        │ JS files → Output|
+        │ cache: ~/.npm    |
+        └──────────────────┘
+                │
+                ▼
+        ┌─────────────────────┐
+        │  DEPLOY             │
+        │ Download artifacts  |
+        │ Consume outputs     |
+        │ cache: ~/.npm       |
+        └─────────────────────┘
 ```
 
 ---
 
-## 2. Workflow File Structure
-
-A GitHub Actions workflow is composed of **mandatory and optional top-level keys**.
-
-### Mandatory Top-Level Keys
-
-| Key    | Description                                 |
-| ------ | ------------------------------------------- |
-| `name` | Name of the workflow (visible in GitHub UI) |
-| `on`   | Event(s) that trigger the workflow          |
-| `jobs` | One or more jobs executed by the workflow   |
-
----
-
-## 3. Full YAML Workflow Example
+## Workflow Trigger
 
 ```yaml
-name: artifacts and outputs workflow
-
 on:
   push:
     branches:
       - main
       - project2
       - dummy
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm run lint
-
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm test > test_output.log
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: test_output.log
-
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-    outputs:
-      script-file: ${{ steps.publish-js.outputs.js-file }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-files
-          path: dist
-      - id: publish-js
-        run: find dist/assets/*.js -type f -execdir echo "js-file={}" >> $GITHUB_OUTPUT ';'
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: dist
-      - run: echo "${{ needs.build.outputs.script-file }}" > JS_FILE.txt
-      - run: echo "Deploying (simulated)..."
 ```
+
+### Explanation
+
+* **push** → Workflow runs on Git push events
+* **branches filter** → Workflow executes only when pushes occur on the listed branches
+* Prevents unnecessary workflow runs on feature or experimental branches
 
 ---
 
-## 4. Events and Event Filters
+## Key GitHub Actions Concepts Explained
 
-### Events (`on`)
+### 1. Events
 
 Events define **when** a workflow runs.
 
@@ -124,110 +89,70 @@ Common events:
 
 * `push`
 * `pull_request`
-* `workflow_dispatch` (manual trigger)
+* `workflow_dispatch`
 * `schedule`
 
-### Event Filters
+---
 
-Filters restrict when an event triggers the workflow.
+### 2. Event Filters
 
-Example:
+Event filters reduce unnecessary executions.
 
-```yaml
-on:
-  push:
-    branches:
-      - main
-```
+Examples:
 
-This ensures the workflow runs **only** for pushes to `main`.
+* Branch filters
+* Path filters
+* Tag filters
 
 ---
 
-## 5. Jobs
+### 3. Jobs
 
-A **job**:
-
-* Is a collection of steps
-* Runs on a single runner
-* Executes in isolation from other jobs
-
-### Mandatory Job Keys
-
-| Key       | Description                      |
-| --------- | -------------------------------- |
-| `runs-on` | Runner type (e.g. ubuntu-latest) |
-| `steps`   | Ordered list of steps            |
-
----
-
-## 6. Steps
-
-Steps are executed **sequentially inside a job**.
-
-Two step types:
-
-### 1. Action Steps
-
-```yaml
-- uses: actions/checkout@v3
-```
-
-Uses a reusable action.
-
-### 2. Run Steps
-
-```yaml
-- run: npm test
-```
-
-Executes shell commands on the runner.
-
----
-
-## 7. Action Types
-
-| Type               | Description                  |
-| ------------------ | ---------------------------- |
-| JavaScript Actions | Node.js based actions        |
-| Docker Actions     | Run inside Docker containers |
-| Composite Actions  | Combine multiple steps       |
-
-Examples used in this workflow:
-
-* `actions/checkout`
-* `actions/setup-node`
-* `actions/upload-artifact`
-* `actions/download-artifact`
-
----
-
-## 8. Sequential vs Parallel Execution
-
-### Parallel Jobs (Default)
+* A job runs on a **fresh runner (VM)**
+* Jobs are **isolated** from each other
+* Data is **not shared automatically** between jobs
 
 ```yaml
 jobs:
-  job1:
-    runs-on: ubuntu-latest
-  job2:
+  lint:
     runs-on: ubuntu-latest
 ```
-
-Both jobs run **in parallel**.
 
 ---
 
-### Sequential Jobs (`needs`)
+### 4. Steps
+
+* Steps run **inside a job**
+* Steps **share the same filesystem**
+* Can be shell commands or reusable actions
 
 ```yaml
-job2:
-  needs: job1
+steps:
+  - run: npm ci
+  - run: npm run lint
 ```
 
-Ensures `job2` runs **only after** `job1` succeeds.
+---
 
-This workflow uses:
+### 5. Sequential vs Parallel Execution
+
+#### Parallel (Default)
+
+```yaml
+jobs:
+  job-a:
+  job-b:
+```
+
+#### Sequential
+
+```yaml
+jobs:
+  job-b:
+    needs: job-a
+```
+
+This workflow uses **strict sequential execution**:
 
 ```
 lint → test → build → deploy
@@ -235,102 +160,128 @@ lint → test → build → deploy
 
 ---
 
-## 9. Runner Isolation
+## Dependency Caching
 
-Each job:
+This workflow uses **GitHub Actions Cache** to speed up execution.
 
-* Runs on a **fresh VM**
-* Has no access to files from other jobs
+### Why Caching?
 
-This is why:
+* Avoid downloading dependencies on every job
+* Reduce execution time
+* Improve CI efficiency
 
-* Artifacts are required for files
-* Outputs are required for values
+### Cache Configuration
+
+```yaml
+- name: Caching Dependencies
+  uses: actions/cache@v3
+  with:
+    path: ~/.npm
+    key: node-module-dependencies-${{ hashFiles('**/package-lock.json') }}
+```
+
+### Cache Behavior
+
+* First run → Cache miss → Dependencies downloaded
+* Subsequent runs → Cache hit → Dependencies reused
+* Dependency change → Cache invalidated automatically
 
 ---
 
-## 10. Artifacts
+## Artifacts
 
-Artifacts are **files or directories** uploaded from a job.
+Artifacts are **files** uploaded from a runner to GitHub storage.
 
-### When to Use Artifacts
+### Characteristics
 
-* Build outputs
-* Logs
-* Reports
+* Persist after job completion
+* Can be downloaded by other jobs
+* Stored as compressed archives
 
-### Artifact Lifecycle
+### Artifact Example
 
-```
-Runner → Upload → GitHub Storage → Download → New Runner
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: build-files
+    path: dist
 ```
 
 ---
 
-## 11. Outputs
+## Outputs
 
 Outputs are **values**, not files.
 
-### Output Flow
+### Characteristics
 
+* Stored in GitHub context
+* Lightweight (strings, numbers)
+* Passed between jobs via `needs`
+
+### Step Output
+
+```bash
+echo "js-file=app.js" >> $GITHUB_OUTPUT
 ```
-Step Output → Job Output → Downstream Job
+
+### Job Output
+
+```yaml
+outputs:
+  script-file: ${{ steps.publish-js-filenames.outputs.js-file }}
 ```
 
-### Why Outputs Exist
+### Consuming Output
 
-* Share metadata
-* Avoid unnecessary artifacts
-* Faster and cleaner pipelines
-
----
-
-## 12. Artifacts vs Outputs
-
-| Feature         | Artifacts             | Outputs        |
-| --------------- | --------------------- | -------------- |
-| Data type       | Files                 | Values         |
-| Stored in       | GitHub artifact store | GitHub context |
-| Download needed | Yes                   | No             |
-| Typical use     | Builds, logs          | Metadata       |
-
----
-
-## 13. Visual Workflow Diagram
-
-```
-Push Event
-   │
-   ▼
-Lint ──▶ Test ──▶ Build ──▶ Deploy
-           │        │        │
-           │        │        ├─ Uses output values
-           │        │
-           │        └─ Upload build artifacts
-           │
-           └─ Upload test logs
+```yaml
+echo "${{ needs.build.outputs.script-file }}"
 ```
 
 ---
 
-## 14. Key Takeaways
+## Artifacts vs Outputs
 
-* Jobs are isolated
-* Steps are sequential
-* Jobs are parallel by default
-* `needs` enforces order
-* Artifacts move files
-* Outputs move values
-
----
-
-## 15. References
-
-* [https://docs.github.com/en/actions](https://docs.github.com/en/actions)
-* [https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
-* [https://github.com/actions/upload-artifact](https://github.com/actions/upload-artifact)
-* [https://github.com/actions/download-artifact](https://github.com/actions/download-artifact)
+| Feature   | Artifacts             | Outputs             |
+| --------- | --------------------- | ------------------- |
+| Data type | Files                 | Values              |
+| Storage   | GitHub artifact store | GitHub context      |
+| Size      | Large                 | Small               |
+| Use case  | Build results, logs   | Metadata, filenames |
 
 ---
 
-**This document intentionally prioritizes clarity and correctness over optimization.**
+## Mandatory YAML Keys
+
+| Key       | Description     |
+| --------- | --------------- |
+| `name`    | Workflow name   |
+| `on`      | Trigger event   |
+| `jobs`    | Job definitions |
+| `runs-on` | Runner type     |
+| `steps`   | Job steps       |
+
+---
+
+## Key Takeaways
+
+* Each job runs on a clean runner
+* Artifacts are required for file sharing
+* Outputs are required for value sharing
+* Caching dramatically improves CI speed
+* `needs` controls execution order
+
+---
+
+## Use Cases
+
+* CI pipelines
+* Multi‑stage builds
+* Artifact promotion
+* Interview preparation
+* GitHub Actions training material
+
+---
+
+**Author:** Abhinav Kumar
+**Purpose:** GitHub Actions learning & best‑practice reference
