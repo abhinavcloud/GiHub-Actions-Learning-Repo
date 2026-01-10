@@ -195,7 +195,7 @@ jobs: #Sequential Job Executions
             - name: Upload artifact which contains the value of the output from build job
               uses: actions/upload-artifact@v4
               with:
-                name: build_JS_Files
+                name: build_JS_Filenames
                 path: JS_FILE.txt
 
             - name: deploy
