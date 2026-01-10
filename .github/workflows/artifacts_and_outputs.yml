@@ -5,8 +5,8 @@
 # Artifacts are the the files which are produced as a result of a step inside a job being executed.
 # These artifacts can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
 # Using this identifier we can then upload these artifacts on different jobs.
-# The identifier is important for the artifact because as we know, different jobs run on different runners (environmnent).
-# Therefore it is important that the artificats are stored with some identifier so that a diferent job on a fresh runner can upload in in its environment.
+# The identifier is important for the artifact because as we know, different jobs run on different runners (environment).
+# Therefore it is important that the artifacts are stored with some identifier so that a different job on a fresh runner can upload in in its environment.
 
 # Outputs on the other hand are values which are outputed by some jobs
 # These outputs will be stored by github step context and then can be used as in input in different/same jobs with different steps
