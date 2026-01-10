@@ -69,7 +69,14 @@ jobs: #Sequential Job Executions
               run: npm ci # Run Shell Command
 
             - name: test
-              run: npm test # Run Shell Command
+              run: npm test > test_output.log # Run Shell Command and store test outputs in log file
+            
+            - name: upload test artifcats to workflow
+              # This step will upoad the test_output.log as an artifcat to GitHub workflow run.
+              uses: actions/upload-artifact@v4
+              with:
+                name: test-logs
+                path: test_output.log
     # Job 3
     build:
         # Runner
