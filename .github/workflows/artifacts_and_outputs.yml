@@ -22,7 +22,7 @@
     # https://dev.to/willvelida/using-github-environment-files-for-actions-workflow-outputs-3cnn
 
 
-name: artifacts and outputs workflow
+name: Tigger workflow on push event on main, project2 and dummy branches
 
 on :
     #Event
