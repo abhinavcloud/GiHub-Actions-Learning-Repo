@@ -126,7 +126,7 @@ jobs: #Sequential Job Executions
               # Since this build job runs on a different machine 
               # the build artifacts created in the previous job is not available in this job.
               # Therefore this must be downloaded on this runner where this deploy job will be run
-              uses: actions/download-artifacts@v4 
+              uses: actions/download-artifact@v4 
               # This GitHub Actions downloads the artifacts from GitHub to the runner
               with:
                 name: build-files
