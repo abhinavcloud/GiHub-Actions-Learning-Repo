@@ -137,7 +137,7 @@ jobs: #Sequential Job Executions
               # Setting an id is important for this step
               # This id will be used in the output identifier as with the step context
               # To get the step context of this specific step
-              run: find dist/assets/*.js -type -f eexecdir echo 'js-file={}' >> $GITHUB_OUTPUT ';'
+              run: find dist/assets/*.js -type f -execdir echo 'js-file={}' >> $GITHUB_OUTPUT ';'
               #This is the step which sets the output locally
               # Here we are just finding the filename with of type *.js within the dist/assets/directory
               # Then storing all the filtered filenames in the local output placeholder of this step js-file
