@@ -138,7 +138,16 @@ jobs: #Sequential Job Executions
                 # Path on the runner machine where the artifact file will be downloaded
             
             - name: Check that the artifacts are downloaded in the runner successfully
-              run: ls dist # Just running the ls command on the dist directory to check if the files are downloaded to runner
+              run: ls dist > dist_file_contents.txt # Just running the ls command on the dist directory to check if the files are downloaded to runner
+
+            - name: Upload the dist_file_contents text file to artifacts
+              # This is just an action step to upload the text file created in above step to GitHub
+              # Just verifying that the contents of the earlier dist folder artifact in the previous job and the ones uploaded to the current runner are same.
+              uses: actions/upload-artifact@v4
+              with:
+                name: dist_file_contents
+                path: 
+
 
             - name: deploy
               run: echo "Deploying (simulated)....." # Run Shell Command
