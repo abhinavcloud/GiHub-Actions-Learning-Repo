@@ -46,12 +46,13 @@ jobs: #Sequential Job Executions
         # Runner
         runs-on: ubuntu-latest
         env: # This is a Job Level Secret. Maped to it is a Repository Secret which is applicable for all environment
-          ENV_OWNER_NAME: ${{ secrets.ENV_OWNER_NAME }} # GitHub Repo secret is referenced here.
+          ENV_OWNER: ${{ secrets.ENV_OWNER_NAME }} # GitHub Repo secret is referenced here.
         # Since this secret is at job level it can be accessed in any steps of this job.
-        
+
         steps:
-            - name: Print workflow level secret
-              run: echo $ENV_OWNER_NAME
+            - name: Print job level secret
+              run: echo $ENV_OWNER # Referencing the declared environment variable at job level which references the GitHub Repo level secret
+              # This environment variable will not be available to other jobs
 
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
@@ -95,6 +96,13 @@ jobs: #Sequential Job Executions
         runs-on: ubuntu-latest
         needs: lint # Sequential dependency. This job will run after the lint job is successfully completed.
         steps:
+  
+            - name: Print step level secret
+              env:
+                STEP_NAME: ${{ secrets.STEP }} # This environment variable references the reporsitory level secret
+              run: echo $STEP_NAME
+              # Prints the step level environment variable.
+              
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
             
