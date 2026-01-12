@@ -40,10 +40,16 @@ on :
 
 jobs: #Sequential Job Executions
     #Job 1
+    env: # This is a Job Level Secret. Maped to it is a Repository Secret which is applicable for all environment
+      ENV_OWNER_NAME: ${{ secrets.ENV_OWNER_NAME }} # GitHub Repo secret is referenced here.
+      # Since this secret is at workflow level it can be accessed in any job any stpes.
+
     lint:
         # Runner
         runs-on: ubuntu-latest
         steps:
+            - name: Print workflow level secret
+              run: echo ENV_OWNER_NAME
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
             
