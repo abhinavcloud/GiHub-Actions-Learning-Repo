@@ -1,7 +1,7 @@
 # This is Push Event Sequential Workflow with Event Filter as "branches"
-# The main intent of this workflow is not to explain push event or Event Filter.
-# The main intent of this workflow is to work and practice on artifacts and outputs
+# Event filter are filters defined for each event types which when included with the Event (:on) will control the workflow for a filtered out events.
 
+# Also included in the workflow are Artifacts and Ouputs
 # Artifacts are the the files which are produced as a result of a step inside a job being executed.
 # These artifacts can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
 # Using this identifier we can then upload these artifacts on different jobs.
@@ -11,7 +11,7 @@
 # Outputs on the other hand are values which are output by some jobs
 # These outputs will be stored by github step context and then can be used as in input in different/same jobs with different steps
 
-#For more information about artifacts and outputs we can look at the followint GitHub Documentations:
+#For more information about artifacts and outputs we can look at the following GitHub Documentations:
     # Artifacts
     # https://github.com/actions/upload-artifact
     # https://github.com/actions/download-artifact
@@ -20,6 +20,11 @@
     # Outputs
     # https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#steps-context
     # https://dev.to/willvelida/using-github-environment-files-for-actions-workflow-outputs-3cnn
+
+# Also included in this workflow are usage of Environment Variables and Secrets
+# These Envrionment variables or secrets can be defined at workflow, job or steps level.
+# Depending on where these environment variables are defined, its access is scoped at that level.
+
 
 
 name: Trigger workflow on push event on main, project2 and dummy branches
