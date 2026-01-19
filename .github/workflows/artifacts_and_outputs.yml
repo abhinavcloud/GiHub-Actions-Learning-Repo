@@ -167,8 +167,8 @@ jobs: #Sequential Job Executions
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
 
-        if: failure() || success()
-        # To make sure this job run even anyother job fails. (like the test job above)
+        if: needs.test.result == 'faliure' || success()
+        # To make sure this job run even test job fails
         # To make sure this job also runs if all jobs are successful.
 
         outputs:
