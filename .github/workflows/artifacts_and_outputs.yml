@@ -142,7 +142,7 @@ jobs: #Sequential Job Executions
 
             - name: upload test reports to workflow
               # This step will upoad the test_output.log as an artifact to GitHub workflow run based on the below condtion
-              if: failure() && and steps.test-code-step.outcome == 'failure'
+              if: failure() && steps.test-code-step.outcome == 'failure'
               # This step will only run if the above condition is satisfied, i.e. step with id test-code-step failed
               # failure() is a function which evaluates if any of the above job or step is failed
               # steps.test-code-step.outcome == 'failure' evaluates if this specific step failed
