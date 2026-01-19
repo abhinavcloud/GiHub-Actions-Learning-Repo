@@ -137,7 +137,7 @@ jobs: #Sequential Job Executions
               # If new dependencies are installed then the previous cache is invalidated and new cache is created
 
 
-            - name: test
+            - name: output test log
               run: npm test > test_output.log # Run Shell Command and store test outputs in log file
             
             - name: upload test artifacts to workflow
@@ -204,7 +204,7 @@ jobs: #Sequential Job Executions
               # If new dependencies are installed then the previous cache is invalidated and new cache is created
 
 
-            - name: build
+            - name: build the code
               run: npm run build # Run Shell Command
 
             #The specific below steps upload the artifact files from GitHub runner to the GitHub cloud bucket
@@ -241,8 +241,8 @@ jobs: #Sequential Job Executions
         
         # This environment level variable is set. 
         # So the steps using the environment variables or secrets defined in the GitHub "dummy" environment which is mapped to "dummy" branch
-        # Wll only be accessed if the workflow is triggered on the dummy branch 
-        # If this workflow is triggered on any other branch, then the steps which contains the secretes or variables
+        # This job will only be accessed if the workflow is triggered on the dummy branch 
+        # If this workflow is triggered on any other branch, then this job will be skipped
         # Related to dummy environment will fail.
         environment: dummy
         env: 
@@ -322,14 +322,14 @@ jobs: #Sequential Job Executions
                 name: build_JS_Filenames
                 path: JS_FILE.txt
 
-            - name: deploy
+            - name: Deploy code
               run: echo "Deploying (simulated)....." # Run Shell Command
 
             - name: Testing environment specific variable - dummy env is mapped to dummy branch
               # This step should only succeed on dummy branch
               # Because this step uses varaibles and secrets mapped to dummy env which is mapped to dummy branch on GitHub
               run: |
-                echo ""
+                echo "Deploying"
 
 
 
