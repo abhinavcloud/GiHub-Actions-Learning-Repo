@@ -156,7 +156,6 @@ jobs: #Sequential Job Executions
     build:
         # Runner
         runs-on: ubuntu-latest
-        
         needs: test # Sequential dependency. This job will run after the test job is successfully completed.
         
         # Definitions of the outputs that will be stored with the execution
@@ -167,6 +166,10 @@ jobs: #Sequential Job Executions
         # This can be then be used in different jobs
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
+
+        if: failure()
+        # To make sure this job run even anyother job fails. (like the test job above)
+
         outputs:
           script-file: ${{steps.publish-js-filenames.outputs.js-file}}
           #This is the output identifier which store the output
