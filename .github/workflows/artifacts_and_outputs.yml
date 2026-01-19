@@ -143,10 +143,10 @@ jobs: #Sequential Job Executions
             - name: upload test reports to workflow
               # This step will upoad the test_output.log as an artifact to GitHub workflow run based on the below condtion
               
-              if: always() && (failure() || steps.test-code-step.outcome == 'success')
+              if: failure() && steps.test-code-step.outcome == 'failure'
               
               # This step will only run if the above condition is satisfied, i.e. step with id test-code-step failed
-              # failure() is a function which evaluates if any of the above job or step is failed
+              # failure() is a function which evaluates if any of the above  step is failed
               # steps.test-code-step.outcome == 'failure' evaluates if this specific step failed
               uses: actions/upload-artifact@v4
               with:
@@ -158,7 +158,13 @@ jobs: #Sequential Job Executions
         runs-on: ubuntu-latest
         
         needs: test # Sequential dependency. This job will run after the test job is successfully completed.
-        if: always() && needs.test.result == 'failure' 
+        if: always() && (failure() || needs.test.result == 'success') 
+        # always() condition make sure that the job is always evaluated even if other jobs
+        # on which this job is dependent are failed before
+        # its better to use always() when a job execution depends on a result of a failed dependency
+        # next is the main condition that run this job if test job is failed
+        # this job executes if dependent job is failure or success
+
         # Definitions of the outputs that will be stored with the execution
         # These outputs will be used as values in different jobs
         # This is because a different job may require these values for some of their steps
@@ -169,11 +175,7 @@ jobs: #Sequential Job Executions
         # outputs must be defined in the job before the steps
 
         
-        # always() condition make sure that the job is always evaluated even if other jobs
-        # on which this job is dependent are failed before
-        # its better to use always() when a job execution depends on a result of a failed dependency
-        # next is the main condition that run this job if test job is failed
-        # however this job will be skipped if test is success.
+
 
         outputs:
           script-file: ${{steps.publish-js-filenames.outputs.js-file}}
