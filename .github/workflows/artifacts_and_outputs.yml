@@ -136,16 +136,20 @@ jobs: #Sequential Job Executions
               # This helps in shortening the execution time
               # If new dependencies are installed then the previous cache is invalidated and new cache is created
 
+            - name: Test code
+              id: test-code-step #This id will be used to reference this step in the next step where we use the condition
+              run: npm run test
 
-            - name: output test log
-              run: npm test > test_output.log # Run Shell Command and store test outputs in log file
-            
-            - name: upload test artifacts to workflow
-              # This step will upoad the test_output.log as an artifcat to GitHub workflow run.
+            - name: upload test reports to workflow
+              # This step will upoad the test_output.log as an artifact to GitHub workflow run based on the below condtion
+              if: failure() && and steps.test-code-step.outcome == 'failure'
+              # This step will only run if the above condition is satisfied, i.e. step with id test-code-step failed
+              # failure() is a function which evaluates if any of the above job or step is failed
+              # steps.test-code-step.outcome == 'failure' evaluates if this specific step failed
               uses: actions/upload-artifact@v4
               with:
-                name: test-logs
-                path: test_output.log
+                name: test-report
+                path: test.json
     # Job 3
     build:
         # Runner
