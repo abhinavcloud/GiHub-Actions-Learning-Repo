@@ -38,6 +38,7 @@ on :
             - project2
             - dummy
 
+            
 jobs: #Sequential Job Executions
     #Job 1
 
@@ -102,6 +103,7 @@ jobs: #Sequential Job Executions
                 STEP_NAME: ${{ secrets.STEP }} # This environment variable references the reporsitory level secret
               run: echo $STEP_NAME
               # Prints the step level environment variable.
+              # Since this environment variable which reference the repository level secret is defined at this step, it cannot be used in any other step.
               
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
@@ -235,6 +237,20 @@ jobs: #Sequential Job Executions
         # Runner 
         runs-on: ubuntu-latest
         needs: build # Sequential dependency. This job will run after the build job is successfully completed.
+        
+        
+        # This environment level variable is set. 
+        # So the steps using the environment variables or secrets defined in the GitHub "dummy" environment which is mapped to "dummy" branch
+        # Wll only be accessed if the workflow is triggered on the dummy branch 
+        # If this workflow is triggered on any other branch, then the steps which contains the secretes or variables
+        # Related to dummy environment will fail.
+        environment: dummy
+        env: 
+            BRANCH: ${{ secrets.ENVIRONMENT_SECRET}} # Environment level secret. Environment dummy is mapped to dummy branch
+            OWNER: ${{ vars.NAME }} # Environment level variable. Environment dummy is mapped to dummy branch
+            MSG: ${{ vars.MESSAGE }}
+            # This is a repo level variable. So this can be accsed on any environment mapped to any branch
+
         steps:
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
@@ -308,6 +324,12 @@ jobs: #Sequential Job Executions
 
             - name: deploy
               run: echo "Deploying (simulated)....." # Run Shell Command
+
+            - name: Testing environment specific variable - dummy env is mapped to dummy branch
+              # This step should only succeed on dummy branch
+              # Because this step uses varaibles and secrets mapped to dummy env which is mapped to dummy branch on GitHub
+              run: |
+                echo ""
 
 
 
