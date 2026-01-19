@@ -167,9 +167,10 @@ jobs: #Sequential Job Executions
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
 
-        if: needs.test.result == 'faliure' || success()
-        # To make sure this job run even test job fails
-        # To make sure this job also runs if all jobs are successful.
+        if: needs.test.result == 'faliure' 
+        # To make sure this job run even test job fails. 
+        # If any other job is failed then this will NOT run because the condition is only test job
+        # If test is passed then this job will not run
 
         outputs:
           script-file: ${{steps.publish-js-filenames.outputs.js-file}}
