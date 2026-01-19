@@ -156,6 +156,7 @@ jobs: #Sequential Job Executions
     build:
         # Runner
         runs-on: ubuntu-latest
+        if: always() && needs.test.result == 'faliure' 
         needs: test # Sequential dependency. This job will run after the test job is successfully completed.
         
         # Definitions of the outputs that will be stored with the execution
@@ -167,7 +168,7 @@ jobs: #Sequential Job Executions
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
 
-        if: always() && needs.test.result == 'faliure' 
+        
         # always() condition make sure that the job is always evaluated even if other jobs
         # on which this job is dependent are failed before
         # its better to use always() when a job execution depends on a result of a failed dependency
