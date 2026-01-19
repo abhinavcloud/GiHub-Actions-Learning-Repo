@@ -167,10 +167,12 @@ jobs: #Sequential Job Executions
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
 
-        if: needs.test.result == 'faliure' 
-        # To make sure this job run even test job fails. 
-        # If any other job is failed then this will NOT run because the condition is only test job
-        # If test is passed then this job will not run
+        if: always() && needs.test.result == 'faliure' 
+        # always() condition make sure that the job is always evaluated even if other jobs
+        # on which this job is dependent are failed before
+        # so its always better to have always() in the condition to make sure the job condition is evaluated
+        # next is the main condition that run this job if test job is failed
+        # however this job will be skipped if test is success.
 
         outputs:
           script-file: ${{steps.publish-js-filenames.outputs.js-file}}
@@ -251,7 +253,10 @@ jobs: #Sequential Job Executions
         needs: build # Sequential dependency. This job will run after the build job is successfully completed.
         
         if: always() && needs.build.result == 'success'
-        #This condition helps to run if build is passed. even if any other job failed.
+        # always() makes sure that this job is evaluated if any previous job is failed
+        # then it checks if build is success or not irrespective of any other job status
+        # if build is success then this job is run even if other jobs failed.
+        
         
         # This environment level variable is set. 
         # So the steps using the environment variables or secrets defined in the GitHub "dummy" environment which is mapped to "dummy" branch
