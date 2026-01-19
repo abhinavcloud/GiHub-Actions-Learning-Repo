@@ -170,7 +170,7 @@ jobs: #Sequential Job Executions
         if: always() && needs.test.result == 'faliure' 
         # always() condition make sure that the job is always evaluated even if other jobs
         # on which this job is dependent are failed before
-        # so its always better to have always() in the condition to make sure the job condition is evaluated
+        # its better to use always() when a job execution depends on a result of a failed dependency
         # next is the main condition that run this job if test job is failed
         # however this job will be skipped if test is success.
 
@@ -253,7 +253,7 @@ jobs: #Sequential Job Executions
         needs: build # Sequential dependency. This job will run after the build job is successfully completed.
         
         if: always() && needs.build.result == 'success'
-        # always() makes sure that this job is evaluated if any previous job is failed
+        # always() makes sure that this job is evaluated if dependencies failed
         # then it checks if build is success or not irrespective of any other job status
         # if build is success then this job is run even if other jobs failed.
         
