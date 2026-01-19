@@ -146,7 +146,7 @@ jobs: #Sequential Job Executions
               # This step will only run if the above condition is satisfied, i.e. step with id test-code-step failed
               # failure() is a function which evaluates if any of the above job or step is failed
               # steps.test-code-step.outcome == 'failure' evaluates if this specific step failed
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v3
               with:
                 name: test-report
                 path: test.json
