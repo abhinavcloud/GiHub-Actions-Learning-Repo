@@ -3,6 +3,10 @@ name: reusable-workflow-deploy
 
 on:
     workflow_call:
+      outputs:
+        workflow-output-message:
+          value: ${{jobs.deploy.outputs.job_output_message}}
+
       inputs:
         path: 
             required: true
@@ -33,14 +37,13 @@ on:
             default: dummy
             
     
-      outputs:
-        workflow-output-message: {{jobs.deploy.outputs.job-output-message}}
+
 jobs:    
     deploy:
         
         runs-on: ubuntu-latest
         outputs:
-            job-output-message: ${{steps.deploy-code.outputs.step-output-message}}
+            job_output_message: ${{steps.deploy-code.outputs.step-output-message}}
         
         steps:
 
