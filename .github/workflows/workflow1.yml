@@ -352,11 +352,12 @@ jobs: #Sequential Job Executions
         needs: deploy
         steps:
           - name: Print the output from deploy job
-            run: echo "${{needs.deploy.outputs.job_output_message}}"
+            run: echo "${{needs.deploy.outputs.workflow-output-message}}"
             # Here we are referencing the deploy job using needs context
             # Then we are referencing the outputs defined in the deploy job
-            # Then we are referencing the specific output job_output_message defined in the deploy job in the reusable workflow of the deploy job 
-
+            # Then we are referencing the specific output workflow_output_message defined in the deploy job in the reusable workflow of the deploy job 
+            # Then we are just printing the output value
+            # This step shows how outputs are referenced from resusable workflow step to job to workflow to caller job and then used in dependent job
 
 
 
