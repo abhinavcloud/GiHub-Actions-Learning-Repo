@@ -27,7 +27,7 @@
 
 
 
-name: Trigger workflow on push event on main, project2 and dummy branches
+name: Workflow1
 
 on :
     #Event
@@ -158,12 +158,13 @@ jobs: #Sequential Job Executions
         runs-on: ubuntu-latest
         
         needs: test # Sequential dependency. This job will run after the test job is successfully completed.
+        
         if: always() && (failure() || needs.test.result == 'success') 
         # always() condition make sure that the job is always evaluated even if other jobs
         # on which this job is dependent are failed before
         # its better to use always() when a job execution depends on a result of a failed dependency
         # next is the main condition that run this job if test job is failed
-        # this job executes if dependent job is failure or success
+        # this job executes if test job is failure or success
 
         # Definitions of the outputs that will be stored with the execution
         # These outputs will be used as values in different jobs
@@ -173,10 +174,6 @@ jobs: #Sequential Job Executions
         # This can be then be used in different jobs
         # We can have multiple outputs in the same job
         # outputs must be defined in the job before the steps
-
-        
-
-
         outputs:
           script-file: ${{steps.publish-js-filenames.outputs.js-file}}
           #This is the output identifier which store the output
@@ -260,35 +257,37 @@ jobs: #Sequential Job Executions
         # then it checks if build is success or not irrespective of any other job status
         # if build is success then this job is run even if other jobs failed.
         
-        
-        # This environment level variable is set. 
-        # So the steps using the environment variables or secrets defined in the GitHub "dummy" environment which is mapped to "dummy" branch
-        # This job will only be accessed if the workflow is triggered on the dummy branch 
-        # If this workflow is triggered on any other branch, then this job will be skipped
-        # Related to dummy environment will fail.
-        environment: dummy
-        env: 
-            BRANCH: ${{ secrets.ENVIRONMENT_SECRET}} # Environment level secret. Environment dummy is mapped to dummy branch
-            OWNER: ${{ vars.NAME }} # Environment level variable. Environment dummy is mapped to dummy branch
-            MSG: ${{ vars.MESSAGE }}
-            # This is a repo level variable. So this can be accsed on any environment mapped to any branch
+        uses: ./.github/workflows/reusable_workflow.yml
+        with:
+            path: ~/.npm
+            key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+            artifact-name: build-files
+            artifact-path: 'dist'
+            build-job-output: ${{needs.build.outputs.script-file}}
+            environment-tag: dummy
+        # The above with block passes the inputs to the reusable workflow called here
 
-        steps:
-            - name: Checkout the code
-              uses: actions/checkout@v3  # GitHub Actions
-            
-            - name: Setup node.js
-              uses: actions/setup-node@v4  # GitHub Actions
-              with:
-                node-version: '20' # Condtional version lock of environment
+        #The below block will be used if we do not want to use the reusable workflow and want to define the steps here directly
+
+
+        
+
+        #steps:
+        #    - name: Checkout the code
+        #      uses: actions/checkout@v3  # GitHub Actions
+        #    
+        #    - name: Setup node.js
+        #      uses: actions/setup-node@v4  # GitHub Actions
+        #      with:
+        #        node-version: '20' # Condtional version lock of environment
 
             # The below step will use the existing cache created on the previous job if not invalidated
             # If the cache in the previous step is invalidated then new cache will be created with the path and key
-            - name: Caching Dependencies
-              uses: actions/cache@v3
-              with:
-                path: ~/.npm # Path to the dependecies files which should be cached
-                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
+#            - name: Caching Dependencies
+#              uses: actions/cache@v3
+#              with:
+#                path: ~/.npm # Path to the dependecies files which should be cached
+#                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
                 # Key should typically contain some dynamic element which should change if a cache is updated or invalidated.
                 # In this example we are caching package-lock.json wherever it exists on the runner 
                 # package-lock.json contains all the dependencies and it is uploaded in the Git Repo
@@ -297,8 +296,8 @@ jobs: #Sequential Job Executions
                 # Then the dependencies will be downloaded again and cached again with an updated hash key.
 
 
-            - name: Install dependencies
-              run: npm ci # Run Shell Command
+#            - name: Install dependencies
+#              run: npm ci # Run Shell Command
               # This step will always run but in this case the above caching step will determine how this will run
               # If the cache with the required hash key value exists, it will not download the dependency
               # It will just use the cache to get the dependencies files
@@ -306,52 +305,46 @@ jobs: #Sequential Job Executions
               # If new dependencies are installed then the previous cache is invalidated and new cache is created
 
 
-            - name: Download Build Artifacts
+#            - name: Download Build Artifacts
               # Since this build job runs on a different machine 
               # the build artifacts created in the previous job is not available in this job.
               # Therefore this must be downloaded on this runner where this deploy job will be run
-              uses: actions/download-artifact@v4 
+#              uses: actions/download-artifact@v4 
               # This GitHub Actions downloads the artifacts from GitHub to the runner
-              with:
-                name: build-files
+#              with:
+#                name: build-files
                 # This is the identifier name by which we know which artifact is deployed
-                path: dist
+#                path: dist
                 # Path on the runner machine where the artifact file will be downloaded
             
-            - name: Check that the artifacts are downloaded in the runner successfully
-              run: ls dist > dist_file_contents.txt # Just running the ls command on the dist directory to check if the files are downloaded to runner
+#            - name: Check that the artifacts are downloaded in the runner successfully
+#              run: ls dist > dist_file_contents.txt # Just running the ls command on the dist directory to check if the files are downloaded to runner
 
-            - name: Upload the dist_file_contents text file to artifacts
+#            - name: Upload the dist_file_contents text file to artifacts
               # This is just an action step to upload the text file created in above step to GitHub
               # Just verifying that the contents of the earlier dist folder artifact in the previous job and the ones uploaded to the current runner are same.
-              uses: actions/upload-artifact@v4
-              with:
-                name: dist_file_contents
-                path:  dist_file_contents.txt 
+#              uses: actions/upload-artifact@v4
+#              with:
+#                name: dist_file_contents
+#                path:  dist_file_contents.txt 
 
             # The below step is to use the output defined in the build job in the deploy job
-            - name: Use the build job output
-              run: echo "${{needs.build.outputs.script-file}}" > JS_FILE.txt
+#            - name: Use the build job output
+#              run: echo "${{needs.build.outputs.script-file}}" > JS_FILE.txt
               # Here i am simply referencing the build job by needs context
               # And inside the build job I am referencing the outputs
               # And inside the build.outputs I am referencing the specific output script-file which I defined
               # And then i push the output in an text file which I will download as an artificat in the next step
 
             # In the below step I am just uploading the JS_FILE.txt from the above step as an artifact
-            - name: Upload artifact which contains the value of the output from build job
-              uses: actions/upload-artifact@v4
-              with:
-                name: build_JS_Filenames
-                path: JS_FILE.txt
+#            - name: Upload artifact which contains the value of the output from build job
+#              uses: actions/upload-artifact@v4
+#              with:
+#                name: build_JS_Filenames
+#                path: JS_FILE.txt
 
-            - name: Deploy code
-              run: echo "Deploying (simulated)....." # Run Shell Command
-
-            - name: Testing environment specific variable - dummy env is mapped to dummy branch
-              # This step should only succeed on dummy branch
-              # Because this step uses varaibles and secrets mapped to dummy env which is mapped to dummy branch on GitHub
-              run: |
-                echo "Deploying"
+#            - name: Deploy code
+#              run: echo "Deploying (simulated)....." # Run Shell Command
 
 
 

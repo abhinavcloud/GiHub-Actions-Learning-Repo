@@ -1,0 +1,81 @@
+
+name: reusable-workflow-deploy
+
+on:
+    workflow_call:
+      inputs:
+        path: 
+            required: true
+            type: string
+            default: ~/.npm
+        key:
+            required: true
+            type: string
+            default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+
+        artifact-name:
+            required: true
+            type: string
+            default: build-files
+
+        artifact-path:
+            required: true
+            type: string
+            default: 'dist'
+
+        build-job-output:
+            required: true
+            type: string
+        
+        environment-tag:
+            required: true
+            type: string
+            default: dummy
+            
+    
+      outputs:
+        workflow-output-message: {{jobs.deploy.outputs.job-output-message}}
+jobs:    
+    deploy:
+        
+        runs-on: ubuntu-latest
+        outputs:
+            job-output-message: ${{steps.deploy-code.outputs.step-output-message}}
+        
+        steps:
+
+           - name: checkout-code
+             uses: actions/checkout@v3
+        
+           - name: setup-node
+             uses: actions/setup-node@v4
+             with:
+                node-version: '20'
+            
+           - name: caching-dependencies
+             uses: actions/cache@v3
+             with:
+                path: ${{inputs.path}}
+                key: ${{inputs.key}}
+
+           - name: install-dependencies
+             run: npm ci
+
+           - name: download-build-artifacts
+             uses: actions/download-artifact@v4
+             with:
+                name: ${{inputs.artifact-name}}
+                path: ${{inputs.artifact-path}}
+
+           - name: use-the-build-job-output
+             run: echo "${{inputs.build-job-output}}"
+
+           - name: deploy-code
+             id: deploy-code
+             run: echo step-output-message="Deploying (simulated)....." >> $GITHUB_OUTPUT
+
+
+
+        
+
+        
