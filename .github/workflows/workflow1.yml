@@ -248,8 +248,9 @@ jobs: #Sequential Job Executions
 
     #Job 4
     deploy:
-        # Runner 
-        runs-on: ubuntu-latest
+        # Runner will be part of the reusable workflow
+        #runs-on: ubuntu-latest
+        
         needs: build # Sequential dependency. This job will run after the build job is successfully completed.
         
         if: always() && needs.build.result == 'success'
