@@ -75,7 +75,7 @@ jobs:
 
            - name: deploy-code
              id: deploy-code
-             run: echo "{{step-output-message}}=Deploying (simulated)..... >> $GITHUB_OUTPUT"
+             run: echo "step-output-message=Deploying (simulated)....." >> $GITHUB_OUTPUT
 
 
 

@@ -347,6 +347,16 @@ jobs: #Sequential Job Executions
 #            - name: Deploy code
 #              run: echo "Deploying (simulated)....." # Run Shell Command
 
+    print_output:
+        runs-on: ubuntu-latest
+        needs: deploy
+        steps:
+          - name: Print the output from deploy job
+            run: echo "${{needs.deploy.outputs.job_output_message}}"
+            # Here we are referencing the deploy job using needs context
+            # Then we are referencing the outputs defined in the deploy job
+            # Then we are referencing the specific output job_output_message defined in the deploy job in the reusable workflow of the deploy job 
+
 
 
 
