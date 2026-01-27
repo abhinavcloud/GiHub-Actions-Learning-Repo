@@ -2,9 +2,19 @@ name: install or get cached dependencies
 
 description: 'If the dependecies exist then get and cache it or install it if doesnt exist'
 
+inputs:
+    path: 
+      required: true
+      type: string
+      default: ~/.npm
+    key:
+      required: true
+      type: string
+      default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+
 runs: 
   using: composite
-  
+
   steps:
   
     - name: Setup node.js
@@ -17,8 +27,8 @@ runs:
     - name: Caching Dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.npm # Path to the dependecies files which should be cached
-        key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
+        path: ${{inputs.path}} # Path to the dependecies files which should be cached
+        key: ${{inputs.key}} # Used for retrieving the cache from cloud to runner.
         # Key should typically contain some dynamic element which should change if a cache is updated or invalidated.
         # In this example we are caching package-lock.json wherever it exists on the runner 
         # package-lock.json contains all the dependencies and it is uploaded in the Git Repo

@@ -60,7 +60,11 @@ jobs: #Sequential Job Executions
             
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
-            # This step uses a local custom action defined in this repository
+              with:
+                path: ~/.npm
+                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+               # This step uses a local custom action defined in this repository
+           
             - name: lint
               run: npm run lint # Run Shell Command
     # Job 2
@@ -83,6 +87,9 @@ jobs: #Sequential Job Executions
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
             # This step uses a local custom action defined in this repository
+              with:
+                path: ~/.npm
+                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
             
 
             - name: Test code
@@ -140,6 +147,10 @@ jobs: #Sequential Job Executions
             
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
+              with:
+                path: ~/.npm
+                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+
             # This step uses a local custom action defined in this repository
 
             - name: build the code
