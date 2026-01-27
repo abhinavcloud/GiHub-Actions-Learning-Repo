@@ -11,21 +11,21 @@ on:
         path: 
             required: true
             type: string
-            default: ~/.npm
+            #default: ~/.npm
         key:
             required: true
             type: string
-            default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+            #default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
 
         artifact-name:
             required: true
             type: string
-            default: build-files
+            #default: build-files
 
         artifact-path:
             required: true
             type: string
-            default: 'dist'
+            #default: 'dist'
 
         build-job-output:
             required: true

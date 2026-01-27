@@ -6,11 +6,11 @@ inputs:
     path: 
       required: true
       type: string
-      default: ~/.npm
+      #default: ~/.npm
     key:
       required: true
       type: string
-      default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+      #default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
 
 runs: 
   using: composite
