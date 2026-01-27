@@ -1,0 +1,40 @@
+name: install or get cached dependencies
+
+description: 'If the dependecies exist then get and cache it or install it if doesnt exist'
+
+runs: 
+  using: composite
+  
+  steps:
+  
+    - name: Setup node.js
+      uses: actions/setup-node@v4  # GitHub Actions
+      with:
+        node-version: '20' # Condtional version lock of environment
+
+     # The below step will use the existing cache created on the previous job if not invalidated
+     # If the cache in the previous step is invalidated then new cache will be created with the path and key
+    - name: Caching Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm # Path to the dependecies files which should be cached
+        key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
+        # Key should typically contain some dynamic element which should change if a cache is updated or invalidated.
+        # In this example we are caching package-lock.json wherever it exists on the runner 
+        # package-lock.json contains all the dependencies and it is uploaded in the Git Repo
+        # If we update dependencies locally then package-lock.json will be updated
+        # In this case since the hash value of this package-lock.json will be changed the existing cache will be invalidated
+        # Then the dependencies will be downloaded again and cached again with an updated hash key.
+
+    - name: Install dependencies
+      run: npm ci # Run Shell Command
+      shell: bash
+      # This step will always run but in this case the above caching step will determine how this will run
+      # If the cache with the required hash key value exists, it will not download the dependency
+      # It will just use the cache to get the dependencies files
+      # This helps in shortening the execution time
+      # If new dependencies are installed then the previous cache is invalidated and new cache is created
+      # shell key is needed in custom action steps to understand the runner which shell environment to used in executing the step
+
+
+
