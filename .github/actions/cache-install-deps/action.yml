@@ -38,7 +38,7 @@ runs:
         # Then the dependencies will be downloaded again and cached again with an updated hash key.
 
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+      
       run: npm ci # Run Shell Command
       shell: bash
       # This step will always run but in this case the above caching step will determine how this will run
