@@ -51,7 +51,7 @@ jobs:
              uses: actions/checkout@v3
         
            - name: install or get cached dependencies
-             uses: ./.github/actions/cache-install-depencies
+             uses: ./.github/actions/cache-install-deps
             # This step uses a local custom action defined in this repository
              with:
                 path: ${{inputs.path}}

@@ -58,37 +58,9 @@ jobs: #Sequential Job Executions
             - name: Checkout the code
               uses: actions/checkout@v3  # GitHub Actions
             
-            - name: Setup node.js
-              uses: actions/setup-node@v4  # GitHub Actions
-              with:
-                node-version: '20' # Condtional version lock of environment
-            
-            # The below step will use GitHub Actions caching actions to cache the dependencies files.
-            # So the the subsequest jobs won't need to install dependencies files from scratch everytime
-            # Caching like this will help in shortening the job and workflow execution time.
-            # Cached files will be store in GitHub Cloud and will be used whenever required for any job/workflow
-            # Cached will fail when the job will be triggered for the very first time.
-            - name: Caching Dependencies
-              uses: actions/cache@v3
-              with:
-                path: ~/.npm # Path to the dependecies files which should be cached
-                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
-                # Key should typically contain some dynamic element which should change if a cache is updated or invalidated.
-                # In this example we are caching package-lock.json wherever it exists on the runner 
-                # package-lock.json contains all the dependencies and it is uploaded in the Git Repo
-                # If we update dependencies locally then package-lock.json will be updated
-                # In this case since the hash value of this package-lock.json will be changed the existing cache will be invalidated
-                # Then the dependencies will be downloaded again and cached again with an updated hash key.
-
-
-            - name: Install dependencies
-              run: npm ci # Run Shell Command
-              # This step will always run but in this case the above caching step will determine how this will run
-              # If the cache with the required hash key value exists, it will not download the dependency
-              # It will just use the cache to get the dependencies files
-              # This helps in shortening the execution time
-              # If new dependencies are installed then the previous cache is invalidated and new cache is created
-
+            - name: install or get cached dependencies
+              uses: ./.github/actions/cache-install-deps
+            # This step uses a local custom action defined in this repository
             - name: lint
               run: npm run lint # Run Shell Command
     # Job 2
@@ -109,7 +81,7 @@ jobs: #Sequential Job Executions
               uses: actions/checkout@v3  # GitHub Actions
 
             - name: install or get cached dependencies
-              uses: ./.github/actions/cache-install-depencies
+              uses: ./.github/actions/cache-install-deps
             # This step uses a local custom action defined in this repository
             
 
@@ -167,7 +139,7 @@ jobs: #Sequential Job Executions
               uses: actions/checkout@v3  # GitHub Actions
             
             - name: install or get cached dependencies
-              uses: ./.github/actions/cache-install-depencies
+              uses: ./.github/actions/cache-install-deps
             # This step uses a local custom action defined in this repository
 
             - name: build the code
