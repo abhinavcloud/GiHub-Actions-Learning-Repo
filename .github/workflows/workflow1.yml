@@ -296,6 +296,12 @@ jobs: #Sequential Job Executions
 
 
 
+    information:
+      
+      runs-on: ubuntu-latest
 
+      steps:
+        - name: run custom javascript action
+          uses: ./.github/actions/deploy-s3-javascript
 
 
