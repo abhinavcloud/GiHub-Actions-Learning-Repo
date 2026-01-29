@@ -4,9 +4,9 @@ description: Deploy a Static Website via AWS S3
 
 runs:
   
-  using: node20
+  using: node16
 
   main: main.js
 
-  
+
 
