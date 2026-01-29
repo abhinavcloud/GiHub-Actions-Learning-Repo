@@ -7,10 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+
 !.github/actions/deploy-s3-javascript/node_modules
-!.github/actions/deploy-s3-javascript/dist
-dist
+!.github/actions/deploy-s3-javascript
+
 dist-ssr
 *.local
 
