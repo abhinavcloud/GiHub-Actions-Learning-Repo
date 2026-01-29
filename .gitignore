@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules/
 dist/
 !.github/actions/deploy-s3-javascript/
-!.github/actions/deploy-s3-javascript/node_modules
+#!.github/actions/deploy-s3-javascript/node_modules
 !.github/actions/deploy-s3-javascript/dist/
 *.local
 
