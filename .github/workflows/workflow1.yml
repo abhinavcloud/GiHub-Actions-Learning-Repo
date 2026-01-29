@@ -301,6 +301,10 @@ jobs: #Sequential Job Executions
       runs-on: ubuntu-latest
 
       steps:
+        
+        - name: get code
+          uses: actions/checkout@v3
+          
         - name: run custom javascript action
           uses: ./.github/actions/deploy-s3-javascript
 
