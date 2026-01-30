@@ -71,28 +71,17 @@ jobs:
       deploy:
         needs: build 
         if: always() && needs.build.result == 'success'
-        runs-on: ubuntu-latest
-        env: 
+        uses: ./.github/workflows/reusable_workflow.yml
+        with:
+          path: ~/.npm
+          key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+          artifact-name: dist-files
+          artifact-path: ./dist
+          bucket: ${{vars.BUCKET}}
+          region: ${{vars.AWS_REGION}}
+        secrets:
           AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          BUCKET: ${{vars.BUCKET}}
-          REGION: ${{vars.AWS_REGION}}
-        steps:
-
-          - name: checkout-code
-            uses: actions/checkout@v3
-
-          - name: deploy-s3-static-site
-            uses: ./.github/workflows/reusable_workflow.yml
-            with:
-              path: ~/.npm
-              key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-              artifact-name: dist-files
-              artifact-path: ./dist
-              access_key: ${{env.AWS_ACCESS_KEY}}
-              password: ${{env.AWS_SECRET_ACCESS_KEY}}
-              bucket: ${{env.BUCKET}}
-              region: ${{env.REGION}}
   
       print-site-url:
         runs-on: ubuntu-latest
