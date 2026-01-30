@@ -59,12 +59,6 @@ jobs:
                 name: ${{inputs.artifact-name}}
                 path: ${{inputs.artifact-path}}
 
-
-
-           - name: deploy-code-message
-             id: deploy-code-message
-             run: echo "step-output-message=Deploying (simulated)....." >> $GITHUB_OUTPUT
-
            - name: connect to aws cli
              uses: aws-actions/configure-aws-credentials@v4
              with:
