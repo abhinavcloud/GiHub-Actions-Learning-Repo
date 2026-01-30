@@ -73,7 +73,7 @@ jobs:
 
            - name: Print Static website url
              id: site-url
-             run: echo "site-url=http://${{inputs.bucket}}.s3-website-ap-south-1.amazonaws.com" >> "$GITHUB_OUTPUT"
+             run: echo "site-url=http://${{inputs.bucket}}.s3-website.ap-south-1.amazonaws.com" >> "$GITHUB_OUTPUT"
 
 
 
