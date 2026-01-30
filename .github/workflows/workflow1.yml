@@ -90,7 +90,12 @@ jobs:
               bucket: ${{env.BUCKET}}
               region: ${{env.REGION}}
   
-
+      print-site-url:
+        runs-on: ubuntu-latest
+        needs: deploy
+        steps:
+          - name: print-site-url
+            run: echo "${{needs.deploy.outputs.site-url}}"
 
 
             

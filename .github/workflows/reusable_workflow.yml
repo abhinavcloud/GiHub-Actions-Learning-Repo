@@ -8,55 +8,40 @@ on:
         path: 
             required: true
             type: string
-            #default: ~/.npm
         key:
             required: true
             type: string
-            #default: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-
         artifact-name:
             required: true
             type: string
-            #default: build-files
-
         artifact-path:
             required: true
             type: string
-            #default: 'dist'
-
-        
         access_key:
             required: true
             type: string
-        
         password:
             required: true
             type: string
-        
         region:
             required: true
             type: string
-        
         bucket:
             required: true
             type: string
 
-
-
-        
-        environment-tag:
-            required: true
-            type: string
-            default: dummy
+      outputs:
+        site-url:
+            value: ${{jobs.reusbale-deploy.outputs.site-url}}
             
     
 
 jobs:    
-    deploy:
+    reusbale-deploy:
         
         runs-on: ubuntu-latest
         outputs:
-            job_output_message: ${{steps.deploy-code-message.outputs.step-output-message}}
+            site-url: ${{steps.site-url.outputs.site-url}}
         
         steps:
 
@@ -94,6 +79,11 @@ jobs:
                 bucket: ${{inputs.bucket}}
                 region: ${{ inputs.region}}
                 dist-folder : ${{inputs.artifact-path}}
+
+           - name: Print Static website url
+             id: site-url
+             run: echo "site-url=http://${{inputs.bucket}}.s3-website-ap-south-1.amazonaws.com" >> "$GITHUB_OUTPUT"
+
 
 
 
