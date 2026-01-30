@@ -44,7 +44,8 @@ jobs:
             site-url: ${{steps.site-url.outputs.site-url}}
         
         steps:
-
+           - name: checkout-code
+             uses: actions/checkout@v3
                  
            - name: install or get cached dependencies
              uses: ./.github/actions/cache-install-deps
