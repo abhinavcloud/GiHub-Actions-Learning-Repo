@@ -1,4 +1,4 @@
-name: Workflow1
+name: Build and deploy Static Website via AWS S3
 on :
 
     push:
