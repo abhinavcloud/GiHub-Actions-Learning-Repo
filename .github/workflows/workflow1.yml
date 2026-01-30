@@ -77,7 +77,7 @@ jobs:
           path: ~/.npm
           key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
           artifact-name: dist-files
-          artifact-path: ./dist
+          artifact-path: dist
           bucket: ${{vars.BUCKET}}
           region: ${{vars.AWS_REGION}}
         secrets: inherit
