@@ -1,311 +1,96 @@
-# This is Push Event Sequential Workflow with Event Filter as "branches"
-# Event filter are filters defined for each event types which when included with the Event (:on) will control the workflow for a filtered out events.
-
-# Also included in the workflow are Artifacts and Ouputs
-# Artifacts are the the files which are produced as a result of a step inside a job being executed.
-# These artifacts can be then uploaded in the GitHub cloud as compressed zip file with an identifier.
-# Using this identifier we can then upload these artifacts on different jobs.
-# The identifier is important for the artifact because as we know, different jobs run on different runners (environment).
-# Therefore it is important that the artifacts are stored with some identifier so that a different job on a fresh runner can upload into its environment.
-
-# Outputs on the other hand are values which are output by some jobs
-# These outputs will be stored by github step context and then can be used as in input in different/same jobs with different steps
-
-#For more information about artifacts and outputs we can look at the following GitHub Documentations:
-    # Artifacts
-    # https://github.com/actions/upload-artifact
-    # https://github.com/actions/download-artifact
-    # https://docs.github.com/en/actions/tutorials/store-and-share-data#passing-data-between-jobs-in-a-workflow
-    
-    # Outputs
-    # https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#steps-context
-    # https://dev.to/willvelida/using-github-environment-files-for-actions-workflow-outputs-3cnn
-
-# Also included in this workflow are usage of Environment Variables and Secrets
-# These Envrionment variables or secrets can be defined at job or steps level.
-# Depending on where these environment variables are defined, its access is scoped at that level.
-
-
-
 name: Workflow1
-
 on :
-    #Event
+
     push:
-        #Event Filter
-        branches: # This workflow will only run if the push event is on these branches
+        
+        branches: 
             - main
             - project2
             - dummy
 
             
-jobs: #Sequential Job Executions
-    #Job 1
-
-
-    lint:
-        # Runner
+jobs: 
+      lint:
         runs-on: ubuntu-latest
-        env: # This is a Job Level Secret. Maped to it is a Repository Secret which is applicable for all environment
-          ENV_OWNER: ${{ secrets.ENV_OWNER_NAME }} # GitHub Repo secret is referenced here.
-        # Since this secret is at job level it can be accessed in any steps of this job.
-
         steps:
             - name: Print job level secret
-              run: echo $ENV_OWNER # Referencing the declared environment variable at job level which references the GitHub Repo level secret
-              # This environment variable will not be available to other jobs
-
+              run: echo $ENV_OWNER 
             - name: Checkout the code
-              uses: actions/checkout@v3  # GitHub Actions
-            
+              uses: actions/checkout@v3 
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
               with:
                 path: ~/.npm
                 key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-               # This step uses a local custom action defined in this repository
-           
             - name: lint
-              run: npm run lint # Run Shell Command
-    # Job 2
-    test:
-        #Runner
+              run: npm run lint     
+      test:
         runs-on: ubuntu-latest
-        needs: lint # Sequential dependency. This job will run after the lint job is successfully completed.
+        needs: lint 
         steps:
-  
-            - name: Print step level secret
-              env:
-                STEP_NAME: ${{ secrets.STEP }} # This environment variable references the reporsitory level secret
-              run: echo $STEP_NAME
-              # Prints the step level environment variable.
-              # Since this environment variable which reference the repository level secret is defined at this step, it cannot be used in any other step.
-              
             - name: Checkout the code
-              uses: actions/checkout@v3  # GitHub Actions
-
+              uses: actions/checkout@v3  
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
-            # This step uses a local custom action defined in this repository
               with:
                 path: ~/.npm
                 key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-            
-
             - name: Test code
-              id: test-code-step #This id will be used to reference this step in the next step where we use the condition
+              id: test-code-step 
               run: npm run test
 
             - name: upload test reports to workflow
-              # This step will upoad the test_output.log as an artifact to GitHub workflow run based on the below condtion
-              
               if: failure() && steps.test-code-step.outcome == 'failure'
-              
-              # This step will only run if the above condition is satisfied, i.e. step with id test-code-step failed
-              # failure() is a function which evaluates if any of the above  step is failed
-              # steps.test-code-step.outcome == 'failure' evaluates if this specific step failed
               uses: actions/upload-artifact@v4
               with:
                 name: test-report
                 path: test.json
-    # Job 3
-    build:
-        # Runner
-        runs-on: ubuntu-latest
-        
-        needs: test # Sequential dependency. This job will run after the test job is successfully completed.
-        
-        if: always() && (failure() || needs.test.result == 'success') 
-        # always() condition make sure that the job is always evaluated even if other jobs
-        # on which this job is dependent are failed before
-        # its better to use always() when a job execution depends on a result of a failed dependency
-        # next is the main condition that run this job if test job is failed
-        # this job executes if test job is failure or success
 
-        # Definitions of the outputs that will be stored with the execution
-        # These outputs will be used as values in different jobs
-        # This is because a different job may require these values for some of their steps
-        # Keep in mind that the output is not a file which is uploaded from runners to GitHub like artifacts
-        # An output is just a value (string, number etc) which the GitHub stores once the step is executed
-        # This can be then be used in different jobs
-        # We can have multiple outputs in the same job
-        # outputs must be defined in the job before the steps
-        outputs:
-          script-file: ${{steps.publish-js-filenames.outputs.js-file}}
-          #This is the output identifier which store the output
-          # Here we are using the GitHub Step context
-          # steps.publish-js-filenames get the specific step context by the step id publish-js-filenames
-          # .outputs gets the outputs within this specific step context
-          # .js-files is the specific output which is stored locally in the step
-          # By getting this specific output context from the step with the step identifier id
-          # We store the local output value to the job output value script-file
-          # This job output value script-file then can be used in other jobs
-        
+      build:
+        runs-on: ubuntu-latest
+        needs: test 
+        if: always() && (failure() || needs.test.result == 'success') 
         steps:
             - name: Checkout the code
-              uses: actions/checkout@v3  # GitHub Actions
-            
+              uses: actions/checkout@v3  
+ 
             - name: install or get cached dependencies
               uses: ./.github/actions/cache-install-deps
               with:
                 path: ~/.npm
                 key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-
-            # This step uses a local custom action defined in this repository
-
             - name: build the code
-              run: npm run build # Run Shell Command
-
-            #The specific below steps upload the artifact files from GitHub runner to the GitHub cloud bucket
+              run: npm run build 
             - name: upload build artifacts
-              # Upload the dist build file artifact generated by the previous step in the GitHub cloud bucket
-              uses: actions/upload-artifact@v4 # GitHub Actions
+              uses: actions/upload-artifact@v4 
               with:
-                name: build-files 
-                # Identifier of the artifact by which the artifact is to be referenced
+                name: dist-files 
                 path: dist 
-                # Path of the folder where the files are stored on the runner and from where it must be uploaded in GitHub bucket
-                if-no-files-found: ignore 
-                # If not files are found to be in the runner then the job would simply continue/pass and not pass
-                # This is optional, valid values are warn, ignore, error. Defaults to warn
+                if-no-files-found: error 
 
-            #The specific below step stores the Outputs
-            - name: Publish JS filenames
-              id: publish-js-filenames 
-              # Setting an id is important for this step
-              # This id will be used in the output identifier as with the step context
-              # To get the step context of this specific step
-              run: find dist/assets/*.js -type f -execdir echo 'js-file={}' >> $GITHUB_OUTPUT ';'
-              #This is the step which sets the output locally
-              # Here we are just finding the filename with of type *.js within the dist/assets/directory
-              # Then storing all the filtered filenames in the local output placeholder of this step js-file
-              # Then exporting this local output placeholder js-file to the env variable $GITHUB_OUTPUT
-
-    #Job 4
-    deploy:
-        # Runner will be part of the reusable workflow
-        #runs-on: ubuntu-latest
-        
-        needs: build # Sequential dependency. This job will run after the build job is successfully completed.
-        
+      deploy:
+        needs: build 
         if: always() && needs.build.result == 'success'
-        # always() makes sure that this job is evaluated if dependencies failed
-        # then it checks if build is success or not irrespective of any other job status
-        # if build is success then this job is run even if other jobs failed.
-        
-        uses: ./.github/workflows/reusable_workflow.yml
-        with:
-            path: ~/.npm
-            key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
-            artifact-name: build-files
-            artifact-path: 'dist'
-            build-job-output: ${{needs.build.outputs.script-file}}
-            environment-tag: dummy
-        # The above with block passes the inputs to the reusable workflow called here
-
-        #The below block will be used if we do not want to use the reusable workflow and want to define the steps here directly
-
-
-        
-
-        #steps:
-        #    - name: Checkout the code
-        #      uses: actions/checkout@v3  # GitHub Actions
-        #    
-        #    - name: Setup node.js
-        #      uses: actions/setup-node@v4  # GitHub Actions
-        #      with:
-        #        node-version: '20' # Condtional version lock of environment
-
-            # The below step will use the existing cache created on the previous job if not invalidated
-            # If the cache in the previous step is invalidated then new cache will be created with the path and key
-#            - name: Caching Dependencies
-#              uses: actions/cache@v3
-#              with:
-#                path: ~/.npm # Path to the dependecies files which should be cached
-#                key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}} # Used for retrieving the cache from cloud to runner.
-                # Key should typically contain some dynamic element which should change if a cache is updated or invalidated.
-                # In this example we are caching package-lock.json wherever it exists on the runner 
-                # package-lock.json contains all the dependencies and it is uploaded in the Git Repo
-                # If we update dependencies locally then package-lock.json will be updated
-                # In this case since the hash value of this package-lock.json will be changed the existing cache will be invalidated
-                # Then the dependencies will be downloaded again and cached again with an updated hash key.
-
-
-#            - name: Install dependencies
-#              run: npm ci # Run Shell Command
-              # This step will always run but in this case the above caching step will determine how this will run
-              # If the cache with the required hash key value exists, it will not download the dependency
-              # It will just use the cache to get the dependencies files
-              # This helps in shortening the execution time
-              # If new dependencies are installed then the previous cache is invalidated and new cache is created
-
-
-#            - name: Download Build Artifacts
-              # Since this build job runs on a different machine 
-              # the build artifacts created in the previous job is not available in this job.
-              # Therefore this must be downloaded on this runner where this deploy job will be run
-#              uses: actions/download-artifact@v4 
-              # This GitHub Actions downloads the artifacts from GitHub to the runner
-#              with:
-#                name: build-files
-                # This is the identifier name by which we know which artifact is deployed
-#                path: dist
-                # Path on the runner machine where the artifact file will be downloaded
-            
-#            - name: Check that the artifacts are downloaded in the runner successfully
-#              run: ls dist > dist_file_contents.txt # Just running the ls command on the dist directory to check if the files are downloaded to runner
-
-#            - name: Upload the dist_file_contents text file to artifacts
-              # This is just an action step to upload the text file created in above step to GitHub
-              # Just verifying that the contents of the earlier dist folder artifact in the previous job and the ones uploaded to the current runner are same.
-#              uses: actions/upload-artifact@v4
-#              with:
-#                name: dist_file_contents
-#                path:  dist_file_contents.txt 
-
-            # The below step is to use the output defined in the build job in the deploy job
-#            - name: Use the build job output
-#              run: echo "${{needs.build.outputs.script-file}}" > JS_FILE.txt
-              # Here i am simply referencing the build job by needs context
-              # And inside the build job I am referencing the outputs
-              # And inside the build.outputs I am referencing the specific output script-file which I defined
-              # And then i push the output in an text file which I will download as an artificat in the next step
-
-            # In the below step I am just uploading the JS_FILE.txt from the above step as an artifact
-#            - name: Upload artifact which contains the value of the output from build job
-#              uses: actions/upload-artifact@v4
-#              with:
-#                name: build_JS_Filenames
-#                path: JS_FILE.txt
-
-#            - name: Deploy code
-#              run: echo "Deploying (simulated)....." # Run Shell Command
-
-    print_output:
         runs-on: ubuntu-latest
-        needs: deploy
+        env: 
+          AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          BUCKET: ${{vars.BUCKET}}
+          REGION: ${{vars.AWS_REGION}}
         steps:
-          - name: Print the output from deploy job
-            run: echo "${{needs.deploy.outputs.workflow-output-message}}"
-            # Here we are referencing the deploy job using needs context
-            # Then we are referencing the outputs defined in the deploy job
-            # Then we are referencing the specific output workflow_output_message defined in the deploy job in the reusable workflow of the deploy job 
-            # Then we are just printing the output value
-            # This step shows how outputs are referenced from resusable workflow step to job to workflow to caller job and then used in dependent job
+          - name: deploy-s3-static-site
+            uses: ./.github/workflows/reusable_workflow.yml
+            with:
+              path: ~/.npm
+              key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
+              artifact-name: dist-files
+              artifact-path: ./dist
+              access_key: ${{env.AWS_ACCESS_KEY}}
+              password: ${{env.AWS_SECRET_ACCESS_KEY}}
+              bucket: ${{env.BUCKET}}
+              region: ${{env.REGION}}
+  
 
 
 
-    information:
-      
-      runs-on: ubuntu-latest
-
-      steps:
-        
-        - name: get code
-          uses: actions/checkout@v3
-          
-        - name: run custom javascript action
-          uses: ./.github/actions/deploy-s3-javascript
-
-
+            

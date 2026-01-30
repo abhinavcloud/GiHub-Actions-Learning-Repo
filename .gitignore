@@ -13,6 +13,7 @@ dist/
 #!.github/actions/deploy-s3-javascript/node_modules
 !.github/actions/deploy-s3-javascript/dist/
 *.local
+bucket-policy.json
 
 # Editor directories and files
 .vscode/*

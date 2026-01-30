@@ -2,6 +2,15 @@ name: Deploy to AWS S3 - updated-1
 
 description: Deploy a Static Website via AWS S3
 
+inputs:
+  bucket:
+    required: true
+  region:
+    required: true
+  dist_folder:
+    required: true
+    
+
 runs:
   
   using: node20
