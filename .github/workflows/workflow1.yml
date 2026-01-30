@@ -66,7 +66,7 @@ jobs:
               uses: actions/upload-artifact@v4 
               with:
                 name: dist-files 
-                path: dist 
+                path: dist/*
                 if-no-files-found: error 
 
       deploy:
@@ -77,7 +77,7 @@ jobs:
           path: ~/.npm
           key: node-module-dependencies-#{{ hashFiles('**/package-lock.json')}}
           artifact-name: dist-files
-          artifact-path: ./dist
+          artifact-path: ./deploy
           bucket: ${{vars.BUCKET}}
           region: ${{vars.AWS_REGION}}
         secrets: inherit
