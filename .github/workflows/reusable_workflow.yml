@@ -17,12 +17,6 @@ on:
         artifact-path:
             required: true
             type: string
-        access_key:
-            required: true
-            type: string
-        password:
-            required: true
-            type: string
         region:
             required: true
             type: string
@@ -33,7 +27,8 @@ on:
       outputs:
         site-url:
             value: ${{jobs.reusbale-deploy.outputs.site-url}}
-            
+
+         
     
 
 jobs:    
@@ -42,6 +37,11 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             site-url: ${{steps.site-url.outputs.site-url}}
+
+        env: 
+            access_key: ${{secrets.AWS_ACCESS_KEY}}
+            password:  ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
         
         steps:
            - name: checkout-code
@@ -62,8 +62,8 @@ jobs:
            - name: connect to aws cli
              uses: aws-actions/configure-aws-credentials@v4
              with:
-                aws-access-key-id: ${{ inputs.access_key }}
-                aws-secret-access-key: ${{ inputs.password}}
+                aws-access-key-id: ${{ env.access_key }}
+                aws-secret-access-key: ${{ env.password}}
                 aws-region: ${{ inputs.region }}
               
            - name: run custom javascript action to sync bucket with local files
