@@ -73,7 +73,7 @@ jobs:
              with:
                 bucket: ${{inputs.bucket}}
                 region: ${{ inputs.region}}
-                dist-folder : ${{inputs.artifact-path}}
+                dist_folder : ${{inputs.artifact-path}}
 
            - name: Print Static website url
              id: site-url
