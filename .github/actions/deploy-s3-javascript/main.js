@@ -13,7 +13,7 @@ function run() {
     
     //Upload the files
     
-    exec.exec(`aws s3 sync ${dist-folder} ${s3url} --region ${region}`)
+    exec.exec(`aws s3 sync ${dist_folder} ${s3url} --region ${region}`)
 }
 
 run();
