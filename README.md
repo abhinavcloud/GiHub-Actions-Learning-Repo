@@ -8,7 +8,7 @@ We are not just deploying a website — we are learning:
 - ✅ How to enforce quality gates (lint → test → build → deploy)  
 - ✅ How to use reusable workflows  
 - ✅ How to build a custom JavaScript GitHub Action  
-- ✅ How to deploy static assets to **:contentReference[oaicite:0]{index=0}** S3  
+- ✅ How to deploy static assets to  S3  
 - ✅ How to manage secrets securely  
 - ✅ How to pass artifacts between jobs  
 - ✅ How to expose outputs across workflows  
@@ -46,12 +46,6 @@ We are creating a **production-grade CI/CD pipeline** that:
 7. Deploys files to an S3 bucket  
 8. Prints the live static website URL  
 
-All powered by:
-
-- **:contentReference[oaicite:1]{index=1}**  
-- **:contentReference[oaicite:2]{index=2}**  
-- **:contentReference[oaicite:3]{index=3}**  
-- **:contentReference[oaicite:4]{index=4}**
 
 ---
 
