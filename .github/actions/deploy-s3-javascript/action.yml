@@ -1,4 +1,4 @@
-name: Deploy to AWS S3 - updated-1
+name: Deploy to AWS S3
 
 description: Deploy a Static Website via AWS S3
 
