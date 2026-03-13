@@ -17,7 +17,7 @@ We are not just deploying a website — we are learning:
 
 # 📌 Architecture Overview
 
-Push to main / project2 / dummy branch  
+Push to main
 ↓  
 Lint  
 ↓  
@@ -58,15 +58,13 @@ on:
   push:
     branches:
       - main
-      - project2
-      - dummy
+
 ```
 
 Triggered on push to:
 
 - `main`  
-- `project2`  
-- `dummy`  
+  
 
 ---
 
